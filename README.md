@@ -4,7 +4,7 @@
 [![Subsystem](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/UserActivityTracker/blob/main/LICENSE)
 
-> A lightweight tracker on user actions for WPF. Support both mouse and keyboard actions. Able to record the user actions, save it to a string representation, and play the recorded actions for analysis. Support full window monitoring or specified focus on a particular element. Support saving the initial size upon recording.
+> A lightweight tracker on user interactions for WPF. Support both mouse and keyboard actions. Able to record the user actions, save it to a string representation, and play the recorded actions for analysis. Support full window monitoring or specified focus on a particular element. Support saving the initial size and additional states upon starting.
 
 ## Main Features
 
