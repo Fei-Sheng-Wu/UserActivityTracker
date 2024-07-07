@@ -42,7 +42,6 @@ window.ContentRendered += async (obj, args) => //Play the user actions when the 
     if (!player.IsPlaying) //Check whether the playing has been started yet.
     {
         await player.Play(session); //Play the recorded user actions from the string representation.
-        await Task.Delay(500); //Pause for 500 milliseconds before closing the new window.
         window.Close(); //Close the new window as the playing is done.
     }
 };
