@@ -3,8 +3,9 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using UserActivityTracker.FileFormat;
 
 namespace UserActivityTracker
@@ -56,32 +57,10 @@ namespace UserActivityTracker
                 this.IsPlaying = true;
             }
 
-            data = data.Trim();
-            string[] rootSplit = data.Split(',');
-
-            bool compress;
-            string jsonString;
-            if (rootSplit.Length == 1)
-            {
-                string firstSplit = rootSplit[0].Trim();
-                compress = firstSplit.StartsWith("{");
-                jsonString = firstSplit;
-            }
-            else
-            {
-                compress = rootSplit[0].Trim() == "1";
-                jsonString = rootSplit[1].Trim();
-            }
-
-            if (compress)
-            {
-                jsonString = Encoding.ASCII.GetString(Convert.FromBase64String(jsonString));
-            }
-
             Structure session;
             try
             {
-                session = JsonSerializer.Deserialize<Structure>(jsonString);
+                session = JsonSerializer.Deserialize<Structure>(data);
             }
             catch (JsonException)
             {
@@ -93,10 +72,10 @@ namespace UserActivityTracker
             this.Element.Width = session.StartingWidth;
             this.Element.Height = session.StartingHeight;
 
-            foreach (string action in session.Actions)
-            {
-                UserAction userAction = UserAction.FromString(action);
+            List<UserAction> actions = UserAction.FromListString(session.Actions);
 
+            foreach (UserAction userAction in actions)
+            {
                 switch (userAction.ActionType)
                 {
                     case 'w': //Wait

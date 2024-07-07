@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace UserActivityTracker.FileFormat
+﻿namespace UserActivityTracker.FileFormat
 {
     public class Structure
     {
@@ -10,6 +8,6 @@ namespace UserActivityTracker.FileFormat
 
         public double StartingHeight { get; set; }
 
-        public List<string> Actions { get; set; }
+        public string Actions { get; set; }
     }
 }
