@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Collections.Generic;
 using UserActivityTracker.FileFormat;
 
@@ -30,6 +31,12 @@ namespace UserActivityTracker
             this.Element = element;
             this.IsPlaying = false;
         }
+
+        [DllImport("user32.dll")]
+        private static extern int SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
 
         [DllImport("user32.dll")]
         private static extern int SetCursorPos(int x, int y);
@@ -81,6 +88,14 @@ namespace UserActivityTracker
 
             foreach (UserAction userAction in actions)
             {
+                try
+                {
+                    IntPtr windowPointer = Process.GetCurrentProcess().MainWindowHandle;
+                    SetForegroundWindow(windowPointer);
+                    SendMessage(windowPointer, 0x0112, 0xF120, 0);
+                }
+                catch { }
+
                 switch (userAction.ActionType)
                 {
                     case 'w': //Wait
@@ -118,6 +133,12 @@ namespace UserActivityTracker
                                 case MouseButton.Right:
                                     mouse_event(0x0008, 0, 0, 0, IntPtr.Zero);
                                     break;
+                                case MouseButton.XButton1:
+                                    mouse_event(0x0080, 0, 0, 0x0001, IntPtr.Zero);
+                                    break;
+                                case MouseButton.XButton2:
+                                    mouse_event(0x0080, 0, 0, 0x0002, IntPtr.Zero);
+                                    break;
                             }
                         }
                         break;
@@ -139,6 +160,12 @@ namespace UserActivityTracker
                                     break;
                                 case MouseButton.Right:
                                     mouse_event(0x0010, 0, 0, 0, IntPtr.Zero);
+                                    break;
+                                case MouseButton.XButton1:
+                                    mouse_event(0x0100, 0, 0, 0x0001, IntPtr.Zero);
+                                    break;
+                                case MouseButton.XButton2:
+                                    mouse_event(0x0100, 0, 0, 0x0002, IntPtr.Zero);
                                     break;
                             }
                         }
