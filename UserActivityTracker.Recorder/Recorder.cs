@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
-using System.Collections.Generic;
 using UserActivityTracker.FileFormat;
 
 namespace UserActivityTracker
@@ -25,8 +24,8 @@ namespace UserActivityTracker
         /// </summary>
         public bool IsRecording { get; internal set; }
 
-        private int lastActionTime = 0;
-        private Structure session = null;
+        private Structure session;
+        private int lastActionTime;
 
         /// <summary>
         /// Initialize a new <see cref="Recorder"/> on a specified <see cref="FrameworkElement"/>.
@@ -56,15 +55,14 @@ namespace UserActivityTracker
 
             this.Element.Focus();
 
+            lastActionTime = Environment.TickCount;
             session = new Structure
             {
                 FrameRate = this.FrameRate,
                 StartingWidth = this.Element.ActualWidth,
                 StartingHeight = this.Element.ActualHeight,
-                Actions = new List<string>()
+                Actions = ""
             };
-
-            lastActionTime = Environment.TickCount;
 
             this.Element.PreviewMouseMove += AddMouseMove;
             this.Element.PreviewMouseDown += AddMouseDown;
@@ -104,22 +102,15 @@ namespace UserActivityTracker
         /// <summary>
         /// Save the current recording on <see cref="Element"/> if the recording exists.
         /// </summary>
-        /// <param name="compress"><see langword="true"/> to compress the recorded data; otherwise, <see langword="false"/>.</param>
         /// <returns>A <see langword="string"/> representation of all user actions on <see cref="Element"/> during the recording.</returns>
-        public string Save(bool compress = true)
+        public string Save()
         {
             if (session == null)
             {
                 return "";
             }
 
-            string jsonString = JsonSerializer.Serialize(session);
-            if (compress)
-            {
-                jsonString = Convert.ToBase64String(Encoding.ASCII.GetBytes(jsonString));
-            }
-
-            return (compress ? "1," : "0,") + jsonString;
+            return JsonSerializer.Serialize(session);
         }
 
         private int CalculateTimePassed(int timestamp)
@@ -139,11 +130,11 @@ namespace UserActivityTracker
             int extra = CalculateTimePassed(timestamp) - 1000 / this.FrameRate;
             if (extra > 0)
             {
-                this.session.Actions.Add(new UserAction()
+                session.Actions += new UserAction()
                 {
                     ActionType = 'w', //Wait
                     ActionParameters = new object[] { extra }
-                }.ToString());
+                }.ToString();
             }
 
             lastActionTime = timestamp;
@@ -159,11 +150,11 @@ namespace UserActivityTracker
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
-            session.Actions.Add(new UserAction()
+            session.Actions += new UserAction()
             {
                 ActionType = 'm', //Move
                 ActionParameters = new object[] { position.X, position.Y }
-            }.ToString());
+            }.ToString();
         }
 
         private void AddMouseDown(object sender, MouseButtonEventArgs e)
@@ -171,11 +162,11 @@ namespace UserActivityTracker
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
-            session.Actions.Add(new UserAction()
+            session.Actions += new UserAction()
             {
                 ActionType = 'p', //Press
                 ActionParameters = new object[] { position.X, position.Y, (int)e.ChangedButton }
-            }.ToString());
+            }.ToString();
         }
 
         private void AddMouseUp(object sender, MouseButtonEventArgs e)
@@ -183,11 +174,11 @@ namespace UserActivityTracker
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
-            session.Actions.Add(new UserAction()
+            session.Actions += new UserAction()
             {
                 ActionType = 'r', //Release
                 ActionParameters = new object[] { position.X, position.Y, (int)e.ChangedButton }
-            }.ToString());
+            }.ToString();
         }
 
         private void AddMouseWheel(object sender, MouseWheelEventArgs e)
@@ -195,33 +186,33 @@ namespace UserActivityTracker
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
-            session.Actions.Add(new UserAction()
+            session.Actions += new UserAction()
             {
                 ActionType = 's', //Scroll
                 ActionParameters = new object[] { position.X, position.Y, e.Delta }
-            }.ToString());
+            }.ToString();
         }
 
         private void AddKeyDown(object sender, KeyEventArgs e)
         {
             AddPossiblePause(e.Timestamp);
 
-            session.Actions.Add(new UserAction()
+            session.Actions += new UserAction()
             {
                 ActionType = 'd', //Down
                 ActionParameters = new object[] { KeyInterop.VirtualKeyFromKey(e.Key) }
-            }.ToString());
+            }.ToString();
         }
 
         private void AddKeyUp(object sender, KeyEventArgs e)
         {
             AddPossiblePause(e.Timestamp);
 
-            session.Actions.Add(new UserAction()
+            session.Actions += new UserAction()
             {
                 ActionType = 'u', //Up
                 ActionParameters = new object[] { KeyInterop.VirtualKeyFromKey(e.Key) }
-            }.ToString());
+            }.ToString();
         }
     }
 }
