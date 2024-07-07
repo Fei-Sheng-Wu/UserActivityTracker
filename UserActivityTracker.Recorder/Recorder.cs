@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
@@ -41,8 +40,9 @@ namespace UserActivityTracker
         /// <summary>
         /// Start to record user actions on <see cref="Element"/> if the recording has not started yet.
         /// </summary>
+        /// <param name="startingConfig">An optional <see langword="string"/> value to store customized starting configurations.</param>
         /// <returns><see langword="true"/> if the recording was started successfully; otherwise, <see langword="false"/>.</returns>
-        public bool Start()
+        public bool Start(string startingConfig = "")
         {
             if (this.IsRecording || this.Element == null)
             {
@@ -61,6 +61,7 @@ namespace UserActivityTracker
                 FrameRate = this.FrameRate,
                 StartingWidth = this.Element.ActualWidth,
                 StartingHeight = this.Element.ActualHeight,
+                StartingConfig = startingConfig,
                 Actions = ""
             };
 

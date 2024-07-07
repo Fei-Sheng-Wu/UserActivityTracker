@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
@@ -45,8 +44,9 @@ namespace UserActivityTracker
         /// Play the recorded user actions on <see cref="Element"/> if the playing has not started yet.
         /// </summary>
         /// <param name="data">A <see langword="string"/> representation of all user actions on <see cref="Element"/>.</param>
+        /// <param name="startingConfigHandler">An optional handler to use the customized starting configurations retrieved as a <see langword="string"/> if the value exists.</param>
         /// <returns><see langword="true"/> if the user actions were played successfully; otherwise, <see langword="false"/>.</returns>
-        public async Task<bool> Play(string data)
+        public async Task<bool> Play(string data, Action<string> startingConfigHandler = null)
         {
             if (this.IsPlaying || this.Element == null || string.IsNullOrWhiteSpace(data))
             {
@@ -71,6 +71,11 @@ namespace UserActivityTracker
 
             this.Element.Width = session.StartingWidth;
             this.Element.Height = session.StartingHeight;
+
+            if (startingConfigHandler != null && !string.IsNullOrWhiteSpace(session.StartingConfig))
+            {
+                startingConfigHandler.Invoke(session.StartingConfig);
+            }
 
             List<UserAction> actions = UserAction.FromListString(session.Actions);
 
