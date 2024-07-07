@@ -69,7 +69,7 @@ p419.2,180,0 //Press down the left mouse button at 419.2 on the x-axis and 180 o
 r419.2,180,0 //Release up the left mouse button at 419.2 on the x-axis and 180 on the y-axis.
 ```
 ```
-s465.6,182.4,74 //Scroll the mouse wheel by a delta of 74 at 465.6 on the x-axis and 182.4 on the y-axis.
+s465.6,182.4,74 //Scroll the mouse wheel by 74 at 465.6 on the x-axis and 182.4 on the y-axis.
 ```
 ```
 d8 //Press down the backspace key.
