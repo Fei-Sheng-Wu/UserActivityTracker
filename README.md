@@ -35,7 +35,7 @@ Use `UserActivityTracker.Player player` to play user actions.
 
 ```c#
 MainWindow window = new MainWindow(); //Create a new window for the user actions to be played.
-UserActivityTracker.Player player = new UserActivityTracker.Player(window); //Set the element to play to the new window.
+UserActivityTracker.Player player = new UserActivityTracker.Player(window); //Set the element to play the user actions to the new window.
 window.Show(); //Show the new window.
 window.ContentRendered += async (obj, args) => //Play the user actions when the new window is ready.
 {
