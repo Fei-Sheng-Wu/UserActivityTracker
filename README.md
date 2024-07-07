@@ -22,8 +22,10 @@ Use `UserActivityTracker.Recorder` to record user actions.
 ```c#
 //Start upon the window is ready.
 UserActivityTracker.Recorder recorder = new UserActivityTracker.Recorder(this); //Set the element to be recorded to the window.
+recorder.FrameRate = 30; //The frame rate can be set optionally. This only affects basic user actions such as moving the mouse.
 recorder.Start(); //Start the recording. Returns true if the recording was started successfully.
-
+```
+```c#
 //Stop upon the window is being closed.
 recorder.Stop(); //Stop the recording. Returns true if the recording was stopped successfully.
 string session = recorder.Save(); //Retrieve the string representation of the recording.
