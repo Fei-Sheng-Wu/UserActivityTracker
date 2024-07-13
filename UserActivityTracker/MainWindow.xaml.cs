@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
 using System.Threading.Tasks;
 
 namespace UserActivityTracker.Test
@@ -14,6 +16,8 @@ namespace UserActivityTracker.Test
 
             buttonRecord.IsEnabled = true;
             buttonPlay.IsEnabled = false;
+
+            textRandom.Text = "This is a random number: " + new Random().Next(); //Generate a random content of the TextBlock to demonstrate the customizable starting configuration.
 
             recorder = new UserActivityTracker.Recorder(this); //Set the element to be recorded to the window.
 
@@ -60,7 +64,8 @@ namespace UserActivityTracker.Test
 
             if (!recorder.IsRecording) //Check whether the recording has been started yet.
             {
-                recorder.Start(); //Start the recording. Returns true if the recording was started successfully.
+                string startingConfig = textRandom.Text; //Use the content of the TextBlock as the starting configuration. This configuration cannot include the character ";" in it.
+                recorder.Start(startingConfig); //Start the recording with a customized configuration that can be used upon playing. Returns true if the recording was started successfully.
                 buttonRecord.Content = "Save Session";
                 buttonRecord.IsEnabled = true;
             }
@@ -85,9 +90,20 @@ namespace UserActivityTracker.Test
             window.Show(); //Show the new window.
             window.ContentRendered += async (obj, args) => //Play the user actions when the new window is ready.
             {
+                if (window.FindName("buttonRecord") is Button button)
+                {
+                    button.IsEnabled = false; //Disable the record button during the playing.
+                }
+
                 if (!player.IsPlaying) //Check whether the playing has been started yet.
                 {
-                    await player.Play(session); //Play the recorded user actions from the string representation.
+                    await player.Play(session, (startingConfig) => //Play the recorded user actions from the string representation along with a callback that retrieves the saved starting configuration.
+                    {
+                        if (window.FindName("textRandom") is TextBlock textBlock)
+                        {
+                            textBlock.Text = startingConfig; //Use the retrieved configuration on the TextBlock.
+                        }
+                    });
                     await Task.Delay(500); //Pause for 500 milliseconds before closing the new window.
                     window.Close(); //Close the new window as the playing is done.
 
