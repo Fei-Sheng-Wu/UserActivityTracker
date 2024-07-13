@@ -1,11 +1,9 @@
 using System;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Collections.Generic;
 using UserActivityTracker.FileFormat;
 
 namespace UserActivityTracker
@@ -64,15 +62,7 @@ namespace UserActivityTracker
                 this.IsPlaying = true;
             }
 
-            Structure session;
-            try
-            {
-                session = JsonSerializer.Deserialize<Structure>(data);
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
+            Structure session = Structure.Deserialize(data);
 
             this.Element.Focus();
 
@@ -84,9 +74,7 @@ namespace UserActivityTracker
                 startingConfigHandler.Invoke(session.StartingConfig);
             }
 
-            List<UserAction> actions = UserAction.FromListString(session.Actions);
-
-            foreach (UserAction userAction in actions)
+            foreach (UserAction userAction in UserAction.FromStringList(session.Actions))
             {
                 try
                 {

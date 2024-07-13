@@ -13,36 +13,34 @@ namespace UserActivityTracker.FileFormat
             return ActionType.ToString() + string.Join(",", ActionParameters);
         }
 
-        public static UserAction FromSingleString(string value)
+        public static UserAction FromString(string value)
         {
             UserAction action = new UserAction();
 
-            if (value.Length > 0)
+            string valueTrimmed = value.Trim();
+            if (valueTrimmed.Length > 0)
             {
-                action.ActionType = value[0];
-                action.ActionParameters = value.Substring(1).Split(',');
+                action.ActionType = valueTrimmed[0];
+                action.ActionParameters = valueTrimmed.Substring(1).Split(',');
             }
 
             return action;
         }
 
-        public static List<UserAction> FromListString(string value)
+        public static IEnumerable<UserAction> FromStringList(string value)
         {
-            List<UserAction> actions = new List<UserAction>();
-
             string currentAction = "";
+
             foreach (char c in value)
             {
                 if (char.IsLetter(c) && currentAction.Length > 0)
                 {
-                    actions.Add(FromSingleString(currentAction));
+                    yield return FromString(currentAction);
                     currentAction = "";
                 }
 
                 currentAction += c;
             }
-
-            return actions;
         }
     }
 }

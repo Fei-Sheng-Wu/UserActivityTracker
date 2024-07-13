@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using UserActivityTracker.FileFormat;
@@ -40,11 +39,11 @@ namespace UserActivityTracker
         /// <summary>
         /// Start to record user actions on <see cref="Element"/> if the recording has not started yet.
         /// </summary>
-        /// <param name="startingConfig">An optional <see langword="string"/> value to store customized starting configurations.</param>
+        /// <param name="startingConfig">An optional <see langword="string"/> value to store customized starting configurations. Cannot include the character ";" in it.</param>
         /// <returns><see langword="true"/> if the recording was started successfully; otherwise, <see langword="false"/>.</returns>
         public bool Start(string startingConfig = "")
         {
-            if (this.IsRecording || this.Element == null)
+            if (this.IsRecording || this.Element == null || startingConfig.Contains(";"))
             {
                 return false;
             }
@@ -111,7 +110,7 @@ namespace UserActivityTracker
                 return "";
             }
 
-            return JsonSerializer.Serialize(session);
+            return Structure.Serialize(session);
         }
 
         private int CalculateTimePassed(int timestamp)
