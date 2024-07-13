@@ -26,7 +26,7 @@ namespace UserActivityTracker.Test
             //    }
             //    buttonRecord.IsEnabled = false;
             //    buttonPlay.IsEnabled = false;
-
+            //
             //    if (!recorder.IsRecording) //Check whether the recording has been started yet.
             //    {
             //        recorder.Start(); //Start the recording. Returns true if the recording was started successfully.
@@ -42,12 +42,12 @@ namespace UserActivityTracker.Test
             //    {
             //        return;
             //    }
-
+            //
             //    if (recorder.IsRecording) //Check whether the recording has been started yet.
             //    {
             //        recorder.Stop(); //Stop the recording. Returns true if the recording was stopped successfully.
             //        session = recorder.Save(); //Retrieve the string representation of the recording.
-
+            //
             //        MessageBox.Show(session, "Recording Data"); //Display the string representation of the recording.
             //    }
             //};
