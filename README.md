@@ -48,6 +48,51 @@ window.ContentRendered += async (obj, args) => //Play the user actions when the 
 };
 ```
 
+### Availability Status
+
+Check whether the recording has started yet:
+
+```c#
+bool isRecording = recorder.IsRecording; //Indicates whether the recording has started.
+```
+
+Check whether the playing has started yet:
+
+```c#
+bool isPlaying = player.IsPlaying; //Indicates whether the playing has started.
+```
+
+Check whether the operation was executed successfully:
+
+```c#
+if (!recorder.Start()) //Start(), Stop(), and Play() all return a boolean value, with true indicating success.
+{
+    //Something wrong happened. The operation failed to be executed successfully.
+}
+```
+
+### Customizable Starting Configuration
+
+Store a customizable string without the character ";" that can be used again upon playing:
+
+```c#
+string startingConfig = textRandom.Text; //Use the content of the TextBlock as the starting configuration. This configuration cannot include the character ";" in it.
+recorder.Start(startingConfig); //Start the recording with a customized configuration that can be used upon playing. Returns true if the recording was started successfully.
+```
+
+Play the user actions with a callback that uses the configuration string stored:
+
+```c#
+//Play the recorded user actions from the string representation along with a callback that retrieves the saved starting configuration.
+await player.Play(session, (startingConfig) =>
+{
+    if (window.FindName("textRandom") is TextBlock textBlock)
+    {
+        textBlock.Text = startingConfig; //Use the retrieved configuration on the TextBlock.
+    }
+});
+```
+
 ## Recording Data
 
 The saved string representation is in a format where attributes are separated with semicolons and include `f`(`FrameRate`), `w`(`StartingWidth`), `h`(`StartingHeight`), `c`(`StartingConfig`), and `a`(`Actions`). Each attribute uses a single-letter indication of the attribute that is followed by the value directly, minimizing the length of the string representation.
