@@ -31,7 +31,7 @@ namespace UserActivityTracker.Test
             //    buttonRecord.IsEnabled = false;
             //    buttonPlay.IsEnabled = false;
             //
-            //    if (!recorder.IsRecording) //Check whether the recording has been started yet.
+            //    if (!recorder.IsRecording) //Check whether the recording has started yet.
             //    {
             //        recorder.Start(); //Start the recording. Returns true if the recording was started successfully.
             //        buttonRecord.Content = "Save Session";
@@ -47,7 +47,7 @@ namespace UserActivityTracker.Test
             //        return;
             //    }
             //
-            //    if (recorder.IsRecording) //Check whether the recording has been started yet.
+            //    if (recorder.IsRecording) //Check whether the recording has started yet.
             //    {
             //        recorder.Stop(); //Stop the recording. Returns true if the recording was stopped successfully.
             //        session = recorder.Save(); //Retrieve the string representation of the recording.
@@ -62,7 +62,7 @@ namespace UserActivityTracker.Test
             buttonRecord.IsEnabled = false;
             buttonPlay.IsEnabled = false;
 
-            if (!recorder.IsRecording) //Check whether the recording has been started yet.
+            if (!recorder.IsRecording) //Check whether the recording has started yet.
             {
                 string startingConfig = textRandom.Text; //Use the content of the TextBlock as the starting configuration. This configuration cannot include the character ";" in it.
                 recorder.Start(startingConfig); //Start the recording with a customized configuration that can be used upon playing. Returns true if the recording was started successfully.
@@ -95,7 +95,7 @@ namespace UserActivityTracker.Test
                     button.IsEnabled = false; //Disable the record button during the playing.
                 }
 
-                if (!player.IsPlaying) //Check whether the playing has been started yet.
+                if (!player.IsPlaying) //Check whether the playing has started yet.
                 {
                     await player.Play(session, (startingConfig) => //Play the recorded user actions from the string representation along with a callback that retrieves the saved starting configuration.
                     {
