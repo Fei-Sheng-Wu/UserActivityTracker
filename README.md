@@ -18,12 +18,11 @@
 
 ## How to Use
 
-Use `UserActivityTracker.Recorder` to record user actions.
+Use `UserActivityTracker.Recorder` to record user actions:
 
 ```c#
 //Start upon the window is ready. The ContentRendered event can be used, for example, to start the recording automatically.
 UserActivityTracker.Recorder recorder = new UserActivityTracker.Recorder(this); //Set the element to be recorded to the window.
-recorder.FrameRate = 30; //The frame rate can be set optionally. This only affects basic user actions such as moving the mouse.
 recorder.Start(); //Start the recording. Returns true if the recording was started successfully.
 ```
 ```c#
@@ -32,7 +31,7 @@ recorder.Stop(); //Stop the recording. Returns true if the recording was stopped
 string session = recorder.Save(); //Retrieve the string representation of the recording.
 ```
 
-Use `UserActivityTracker.Player` to play user actions.
+Use `UserActivityTracker.Player` to play user actions:
 
 ```c#
 MainWindow window = new MainWindow(); //Create a new window for the user actions to be played.
@@ -46,6 +45,22 @@ window.ContentRendered += async (obj, args) => //Play the user actions when the 
         window.Close(); //Close the new window as the playing is done.
     }
 };
+```
+
+### Configurable Properties
+
+Configurable properties of `UserActivityTracker.Recorder`:
+
+```c#
+recorder.FrameRate = 30; //The number of basic user actions that are recorded per second, including moving the mouse. The default value is 30.
+recorder.RecordMouseActions = true; //Indicates whether to record mouse actions from the user. The default value is true.
+recorder.RecordKeyboardActions = true; //Indicates whether to record keyboard actions from the user. The default value is true.
+```
+
+Configurable properties of `UserActivityTracker.Player`:
+
+```c#
+player.PlaybackSpeed = 1.0; //The multiple that is applied to the frame rate during the playing. The default value is 1.0.
 ```
 
 ### Availability Status
@@ -93,7 +108,7 @@ await player.Play(session, (startingConfig) =>
 });
 ```
 
-## Recording Data
+## Recording Data Format
 
 The saved string representation is in a format where attributes are separated with semicolons and include `f`(`FrameRate`), `w`(`StartingWidth`), `h`(`StartingHeight`), `c`(`StartingConfig`), and `a`(`Actions`). Each attribute uses a single-letter indication of the attribute that is followed by the value directly, minimizing the length of the string representation.
 
