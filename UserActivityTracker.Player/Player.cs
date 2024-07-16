@@ -80,6 +80,7 @@ namespace UserActivityTracker
                 startingConfigHandler.Invoke(session.StartingConfig);
             }
 
+            int timestamp = Environment.TickCount;
             foreach (UserAction userAction in UserAction.FromStringList(session.Actions))
             {
                 try
@@ -191,15 +192,16 @@ namespace UserActivityTracker
                         break;
                 }
 
-                await Pause(1000 / session.FrameRate, this.PlaybackSpeed);
+                await Pause(1000 / session.FrameRate, this.PlaybackSpeed, Environment.TickCount - timestamp);
+                timestamp = Environment.TickCount;
             }
 
             return true;
         }
 
-        private Task Pause(int milliseconds, double playbackSpeed)
+        private Task Pause(int milliseconds, double playbackSpeed, int actualTime = 0)
         {
-            return Task.Delay((int)(milliseconds / playbackSpeed));
+            return Task.Delay(Math.Max(0, (int)(milliseconds / playbackSpeed) - actualTime));
         }
     }
 }
