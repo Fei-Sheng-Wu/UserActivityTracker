@@ -16,6 +16,11 @@ namespace UserActivityTracker
         public FrameworkElement Element { get; }
 
         /// <summary>
+        /// The multiple that is applied to the frame rate during the playing. The default value is 1.0.
+        /// </summary>
+        public double PlaybackSpeed { get; set; }
+
+        /// <summary>
         /// Indicates whether the playing has started.
         /// </summary>
         public bool IsPlaying { get; internal set; }
@@ -27,6 +32,7 @@ namespace UserActivityTracker
         public Player(FrameworkElement element)
         {
             this.Element = element;
+            this.PlaybackSpeed = 1.0;
             this.IsPlaying = false;
         }
 
@@ -90,7 +96,7 @@ namespace UserActivityTracker
                         if (userAction.ActionParameters.Length >= 1
                             && int.TryParse(userAction.ActionParameters[0].ToString(), out int wTime))
                         {
-                            await Task.Delay(wTime);
+                            await Pause(wTime, this.PlaybackSpeed);
                         }
                         break;
                     case 'm': //Move
@@ -185,10 +191,15 @@ namespace UserActivityTracker
                         break;
                 }
 
-                await Task.Delay(1000 / session.FrameRate);
+                await Pause(1000 / session.FrameRate, this.PlaybackSpeed);
             }
 
             return true;
+        }
+
+        private Task Pause(int milliseconds, double playbackSpeed)
+        {
+            return Task.Delay((int)(milliseconds / playbackSpeed));
         }
     }
 }
