@@ -13,9 +13,19 @@ namespace UserActivityTracker
         public FrameworkElement Element { get; }
 
         /// <summary>
-        /// The number of basic user actions that are recorded per second, including moving the mouse.
+        /// The number of basic user actions that are recorded per second, including moving the mouse. The default value is 30.
         /// </summary>
         public int FrameRate { get; set; }
+
+        /// <summary>
+        /// Indicates whether to record mouse actions from the user. The default value is <see langword="true"/>.
+        /// </summary>
+        public bool RecordMouseActions { get; set; }
+
+        /// <summary>
+        /// Indicates whether to record keyboard actions from the user. The default value is <see langword="true"/>.
+        /// </summary>
+        public bool RecordKeyboardActions { get; set; }
 
         /// <summary>
         /// Indicates whether the recording has started.
@@ -33,6 +43,8 @@ namespace UserActivityTracker
         {
             this.Element = element;
             this.FrameRate = 30;
+            this.RecordMouseActions = true;
+            this.RecordKeyboardActions = true;
             this.IsRecording = false;
         }
 
@@ -142,7 +154,7 @@ namespace UserActivityTracker
 
         private void AddMouseMove(object sender, MouseEventArgs e)
         {
-            if (CalculateTimePassed(e.Timestamp) < 1000 / this.FrameRate)
+            if (!this.RecordMouseActions || CalculateTimePassed(e.Timestamp) < 1000 / this.FrameRate)
             {
                 return;
             }
@@ -159,6 +171,11 @@ namespace UserActivityTracker
 
         private void AddMouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (!this.RecordMouseActions)
+            {
+                return;
+            }
+
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
@@ -171,6 +188,11 @@ namespace UserActivityTracker
 
         private void AddMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (!this.RecordMouseActions)
+            {
+                return;
+            }
+
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
@@ -183,6 +205,11 @@ namespace UserActivityTracker
 
         private void AddMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if (!this.RecordMouseActions)
+            {
+                return;
+            }
+
             AddPossiblePause(e.Timestamp);
 
             Point position = e.GetPosition(this.Element);
@@ -195,6 +222,11 @@ namespace UserActivityTracker
 
         private void AddKeyDown(object sender, KeyEventArgs e)
         {
+            if (!this.RecordKeyboardActions)
+            {
+                return;
+            }
+
             AddPossiblePause(e.Timestamp);
 
             session.Actions += new UserAction()
@@ -206,6 +238,11 @@ namespace UserActivityTracker
 
         private void AddKeyUp(object sender, KeyEventArgs e)
         {
+            if (!this.RecordKeyboardActions)
+            {
+                return;
+            }
+
             AddPossiblePause(e.Timestamp);
 
             session.Actions += new UserAction()
