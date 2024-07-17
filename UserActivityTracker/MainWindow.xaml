@@ -9,7 +9,7 @@
         <ScrollViewer Height="170" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock x:Name="textRandom" HorizontalAlignment="Center">This is some text.</TextBlock>
-                <Button Width="100" HorizontalAlignment="Center" Margin="0,8,0,0">Sample Button</Button>
+                <Button Width="100" HorizontalAlignment="Center" Margin="0,8,0,0" Click="SampleButton_Click">Sample Button</Button>
                 <TextBox Width="150" HorizontalAlignment="Center" Margin="0,8,0,0">Sample TextBox</TextBox>
                 <RichTextBox Width="200" Height="60" HorizontalAlignment="Center" Margin="0,8,0,0">
                     <FlowDocument>

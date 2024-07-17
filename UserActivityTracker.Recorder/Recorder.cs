@@ -125,6 +125,27 @@ namespace UserActivityTracker
             return Structure.Serialize(session);
         }
 
+        /// <summary>
+        /// Add a custom <see langword="string"/> message to the recording that can be outputted to the logs. Cannot include the characters ";" and "'" in it.
+        /// </summary>
+        /// <param name="message">A custom <see langword="string"/> that will be added to the recording.</param>
+        /// <returns><see langword="true"/> if the message was added successfully; otherwise, <see langword="false"/>.</returns>
+        public bool LogMessage(string message)
+        {
+            if (!this.IsRecording || message.Contains(";") || message.Contains("'"))
+            {
+                return false;
+            }
+
+            session.Actions += new UserAction()
+            {
+                ActionType = UserActionType.Message,
+                ActionParameters = new object[] { $"\'{message}\'" }
+            }.ToString();
+
+            return true;
+        }
+
         private int CalculateTimePassed()
         {
             int timestamp = Environment.TickCount;
@@ -148,7 +169,7 @@ namespace UserActivityTracker
             {
                 session.Actions += new UserAction()
                 {
-                    ActionType = 'w', //Wait
+                    ActionType = UserActionType.Pause,
                     ActionParameters = new object[] { extra }
                 }.ToString();
             }
@@ -158,7 +179,7 @@ namespace UserActivityTracker
 
         private void AddMouseMove(object sender, MouseEventArgs e)
         {
-            if (!this.RecordMouseActions || CalculateTimePassed() < 1000 / this.FrameRate)
+            if (!this.IsRecording || !this.RecordMouseActions || CalculateTimePassed() < 1000 / this.FrameRate)
             {
                 return;
             }
@@ -168,14 +189,14 @@ namespace UserActivityTracker
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
             {
-                ActionType = 'm', //Move
+                ActionType = UserActionType.MouseMove,
                 ActionParameters = new object[] { position.X, position.Y }
             }.ToString();
         }
 
         private void AddMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!this.RecordMouseActions)
+            if (!this.IsRecording || !this.RecordMouseActions)
             {
                 return;
             }
@@ -185,14 +206,14 @@ namespace UserActivityTracker
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
             {
-                ActionType = 'p', //Press
+                ActionType = UserActionType.MouseDown,
                 ActionParameters = new object[] { position.X, position.Y, (int)e.ChangedButton }
             }.ToString();
         }
 
         private void AddMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (!this.RecordMouseActions)
+            if (!this.IsRecording || !this.RecordMouseActions)
             {
                 return;
             }
@@ -202,14 +223,14 @@ namespace UserActivityTracker
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
             {
-                ActionType = 'r', //Release
+                ActionType = UserActionType.MouseUp,
                 ActionParameters = new object[] { position.X, position.Y, (int)e.ChangedButton }
             }.ToString();
         }
 
         private void AddMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (!this.RecordMouseActions)
+            if (!this.IsRecording || !this.RecordMouseActions)
             {
                 return;
             }
@@ -219,14 +240,14 @@ namespace UserActivityTracker
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
             {
-                ActionType = 's', //Scroll
+                ActionType = UserActionType.MouseWheel,
                 ActionParameters = new object[] { position.X, position.Y, e.Delta }
             }.ToString();
         }
 
         private void AddKeyDown(object sender, KeyEventArgs e)
         {
-            if (!this.RecordKeyboardActions)
+            if (!this.IsRecording || !this.RecordKeyboardActions)
             {
                 return;
             }
@@ -235,14 +256,14 @@ namespace UserActivityTracker
 
             session.Actions += new UserAction()
             {
-                ActionType = 'd', //Down
+                ActionType = UserActionType.KeyDown,
                 ActionParameters = new object[] { KeyInterop.VirtualKeyFromKey(e.Key) }
             }.ToString();
         }
 
         private void AddKeyUp(object sender, KeyEventArgs e)
         {
-            if (!this.RecordKeyboardActions)
+            if (!this.IsRecording || !this.RecordKeyboardActions)
             {
                 return;
             }
@@ -251,7 +272,7 @@ namespace UserActivityTracker
 
             session.Actions += new UserAction()
             {
-                ActionType = 'u', //Up
+                ActionType = UserActionType.KeyUp,
                 ActionParameters = new object[] { KeyInterop.VirtualKeyFromKey(e.Key) }
             }.ToString();
         }

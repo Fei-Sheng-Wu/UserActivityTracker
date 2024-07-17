@@ -108,10 +108,19 @@ namespace UserActivityTracker.Test
                     window.Close(); //Close the new window as the playing is done.
 
                     MessageBox.Show(session, "Recording Data"); //Display the string representation of the recording.
+                    MessageBox.Show(player.LogOutput, "Log Output"); //Display the outputted logs of the recording.
                 }
             };
 
             buttonPlay.IsEnabled = true;
+        }
+
+        private void SampleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (recorder.IsRecording) //Check whether the recording has started yet.
+            {
+                recorder.LogMessage("Sample Button Clicked!"); //Log a custom string message into the recording.
+            }
         }
     }
 }
