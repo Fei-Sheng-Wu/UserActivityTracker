@@ -110,7 +110,7 @@ await player.Play(session, (startingConfig) =>
 
 ### Log Message
 
-Add a custom string message without the characters `;` and `'` to the recording that can be outputted to the logs:
+Add a custom string message without the characters `;` and `'` to the recording that can be outputted to the logs during the playing:
 
 ```c#
 //When a button is clicked.
