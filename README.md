@@ -68,13 +68,13 @@ player.PlaybackSpeed = 1.0; //The multiple that is applied to the frame rate dur
 Check whether the recording has started yet:
 
 ```c#
-bool isRecording = recorder.IsRecording; //Indicates whether the recording has started.
+bool isRecording = recorder.IsRecording; //Indicates whether the recording has started yet.
 ```
 
 Check whether the playing has started yet:
 
 ```c#
-bool isPlaying = player.IsPlaying; //Indicates whether the playing has started.
+bool isPlaying = player.IsPlaying; //Indicates whether the playing has started yet.
 ```
 
 Check whether the operation was executed successfully:
@@ -88,7 +88,7 @@ if (!recorder.Start()) //Start(), Stop(), and Play() all return a boolean value,
 
 ### Customizable Starting Configuration
 
-Store a customizable string without the character ";" that can be used again upon playing:
+Store a customizable string without the character `;` that can be used again upon playing:
 
 ```c#
 string startingConfig = textRandom.Text; //Use the content of the TextBlock as the starting configuration. This configuration cannot include the character ";" in it.
@@ -106,6 +106,21 @@ await player.Play(session, (startingConfig) =>
         textBlock.Text = startingConfig; //Use the retrieved configuration on the TextBlock.
     }
 });
+```
+
+### Log Message
+
+Add a custom string message without the characters `;` and `'` to the recording that can be outputted to the logs:
+
+```c#
+//When a button is clicked.
+recorder.LogMessage("Sample Button Clicked!"); //Log a custom string message into the recording.
+```
+
+Receive the current output of logs that have already been outputted during the playing:
+
+```c#
+string logOutput = player.LogOutput; //The available logs at the moment. 
 ```
 
 ## Recording Data Format
