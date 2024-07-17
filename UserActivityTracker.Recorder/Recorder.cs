@@ -28,7 +28,7 @@ namespace UserActivityTracker
         public bool RecordKeyboardActions { get; set; }
 
         /// <summary>
-        /// Indicates whether the recording has started.
+        /// Indicates whether the recording has started yet.
         /// </summary>
         public bool IsRecording { get; internal set; }
 
@@ -125,8 +125,10 @@ namespace UserActivityTracker
             return Structure.Serialize(session);
         }
 
-        private int CalculateTimePassed(int timestamp)
+        private int CalculateTimePassed()
         {
+            int timestamp = Environment.TickCount;
+
             if (timestamp >= lastActionTime)
             {
                 return timestamp - lastActionTime;
@@ -137,9 +139,11 @@ namespace UserActivityTracker
             }
         }
 
-        private void AddPossiblePause(int timestamp)
+        private void AddPossiblePause()
         {
-            int extra = CalculateTimePassed(timestamp) - 1000 / this.FrameRate;
+            int timestamp = Environment.TickCount;
+
+            int extra = CalculateTimePassed() - 1000 / this.FrameRate;
             if (extra > 0)
             {
                 session.Actions += new UserAction()
@@ -154,12 +158,12 @@ namespace UserActivityTracker
 
         private void AddMouseMove(object sender, MouseEventArgs e)
         {
-            if (!this.RecordMouseActions || CalculateTimePassed(e.Timestamp) < 1000 / this.FrameRate)
+            if (!this.RecordMouseActions || CalculateTimePassed() < 1000 / this.FrameRate)
             {
                 return;
             }
 
-            AddPossiblePause(e.Timestamp);
+            AddPossiblePause();
 
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
@@ -176,7 +180,7 @@ namespace UserActivityTracker
                 return;
             }
 
-            AddPossiblePause(e.Timestamp);
+            AddPossiblePause();
 
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
@@ -193,7 +197,7 @@ namespace UserActivityTracker
                 return;
             }
 
-            AddPossiblePause(e.Timestamp);
+            AddPossiblePause();
 
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
@@ -210,7 +214,7 @@ namespace UserActivityTracker
                 return;
             }
 
-            AddPossiblePause(e.Timestamp);
+            AddPossiblePause();
 
             Point position = e.GetPosition(this.Element);
             session.Actions += new UserAction()
@@ -227,7 +231,7 @@ namespace UserActivityTracker
                 return;
             }
 
-            AddPossiblePause(e.Timestamp);
+            AddPossiblePause();
 
             session.Actions += new UserAction()
             {
@@ -243,7 +247,7 @@ namespace UserActivityTracker
                 return;
             }
 
-            AddPossiblePause(e.Timestamp);
+            AddPossiblePause();
 
             session.Actions += new UserAction()
             {
