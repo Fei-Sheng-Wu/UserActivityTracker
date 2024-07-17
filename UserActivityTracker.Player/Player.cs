@@ -21,9 +21,14 @@ namespace UserActivityTracker
         public double PlaybackSpeed { get; set; }
 
         /// <summary>
-        /// Indicates whether the playing has started.
+        /// Indicates whether the playing has started yet.
         /// </summary>
         public bool IsPlaying { get; internal set; }
+
+        /// <summary>
+        /// The current output of logs that have already been outputted.
+        /// </summary>
+        public string LogOutput { get; internal set; }
 
         /// <summary>
         /// Initialize a new <see cref="Player"/> on a specified <see cref="FrameworkElement"/>.
@@ -34,6 +39,7 @@ namespace UserActivityTracker
             this.Element = element;
             this.PlaybackSpeed = 1.0;
             this.IsPlaying = false;
+            this.LogOutput = "";
         }
 
         [DllImport("user32.dll")]
@@ -93,14 +99,26 @@ namespace UserActivityTracker
 
                 switch (userAction.ActionType)
                 {
-                    case 'w': //Wait
+                    case UserActionType.Unknown:
+                        if (userAction.ActionParameters.Length >= 1)
+                        {
+                            UpdateLogOutput("ERROR", "Unknown User Action: " + userAction.ActionParameters[0].ToString());
+                        }
+                        break;
+                    case UserActionType.Message:
+                        if (userAction.ActionParameters.Length >= 1)
+                        {
+                            UpdateLogOutput("MESSAGE", userAction.ActionParameters[0].ToString());
+                        }
+                        break;
+                    case UserActionType.Pause:
                         if (userAction.ActionParameters.Length >= 1
                             && int.TryParse(userAction.ActionParameters[0].ToString(), out int wTime))
                         {
                             await Pause(wTime, this.PlaybackSpeed);
                         }
                         break;
-                    case 'm': //Move
+                    case UserActionType.MouseMove:
                         if (userAction.ActionParameters.Length >= 2
                             && double.TryParse(userAction.ActionParameters[0].ToString(), out double mX)
                             && double.TryParse(userAction.ActionParameters[1].ToString(), out double mY))
@@ -109,7 +127,7 @@ namespace UserActivityTracker
                             SetCursorPos((int)point.X, (int)point.Y);
                         }
                         break;
-                    case 'p': //Press
+                    case UserActionType.MouseDown:
                         if (userAction.ActionParameters.Length >= 3
                             && double.TryParse(userAction.ActionParameters[0].ToString(), out double pX)
                             && double.TryParse(userAction.ActionParameters[1].ToString(), out double pY)
@@ -137,7 +155,7 @@ namespace UserActivityTracker
                             }
                         }
                         break;
-                    case 'r': //Release
+                    case UserActionType.MouseUp:
                         if (userAction.ActionParameters.Length >= 3
                             && double.TryParse(userAction.ActionParameters[0].ToString(), out double rX)
                             && double.TryParse(userAction.ActionParameters[1].ToString(), out double rY)
@@ -165,7 +183,7 @@ namespace UserActivityTracker
                             }
                         }
                         break;
-                    case 's': //Scroll
+                    case UserActionType.MouseWheel:
                         if (userAction.ActionParameters.Length >= 3
                             && double.TryParse(userAction.ActionParameters[0].ToString(), out double sX)
                             && double.TryParse(userAction.ActionParameters[1].ToString(), out double sY)
@@ -176,14 +194,14 @@ namespace UserActivityTracker
                             mouse_event(0x0800, 0, 0, sDelta, IntPtr.Zero);
                         }
                         break;
-                    case 'd': //Down
+                    case UserActionType.KeyDown:
                         if (userAction.ActionParameters.Length >= 1
-                            && int.TryParse(userAction.ActionParameters[0].ToString(), out int dKey))
+                             && int.TryParse(userAction.ActionParameters[0].ToString(), out int dKey))
                         {
                             keybd_event((byte)dKey, 0x45, 0x0001 | 0x0000, IntPtr.Zero);
                         }
                         break;
-                    case 'u': //Up
+                    case UserActionType.KeyUp:
                         if (userAction.ActionParameters.Length >= 1
                             && int.TryParse(userAction.ActionParameters[0].ToString(), out int uKey))
                         {
@@ -192,7 +210,10 @@ namespace UserActivityTracker
                         break;
                 }
 
-                await Pause(1000 / session.FrameRate, this.PlaybackSpeed, Environment.TickCount - timestamp);
+                if (userAction.ActionType != UserActionType.Message)
+                {
+                    await Pause(1000 / session.FrameRate, this.PlaybackSpeed, Environment.TickCount - timestamp);
+                }
                 timestamp = Environment.TickCount;
             }
 
@@ -202,6 +223,11 @@ namespace UserActivityTracker
         private Task Pause(int milliseconds, double playbackSpeed, int actualTime = 0)
         {
             return Task.Delay(Math.Max(0, (int)(milliseconds / playbackSpeed) - actualTime));
+        }
+
+        private void UpdateLogOutput(string outputType, string newOutput)
+        {
+            this.LogOutput += $"[{outputType}] {newOutput}\n";
         }
     }
 }
