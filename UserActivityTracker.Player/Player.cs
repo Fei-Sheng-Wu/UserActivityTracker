@@ -8,6 +8,9 @@ using UserActivityTracker.FileFormat;
 
 namespace UserActivityTracker
 {
+    /// <summary>
+    /// Provides the ability to play a series of user actions on a specified <see cref="FrameworkElement"/>.
+    /// </summary>
     public class Player
     {
         /// <summary>
@@ -31,7 +34,12 @@ namespace UserActivityTracker
         public string LogOutput { get; internal set; }
 
         /// <summary>
-        /// Initialize a new <see cref="Player"/> on a specified <see cref="FrameworkElement"/>.
+        /// Occurs after <see cref="LogOutput"/> has been updated.
+        /// </summary>
+        public event LogOutputUpdatedHandler LogOutputUpdated;
+
+        /// <summary>
+        /// Initialize a new instance of the <see cref="Player"/> class on a specified <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="element">The <see cref="FrameworkElement"/> that is set to play the user actions.</param>
         public Player(FrameworkElement element)
@@ -102,13 +110,13 @@ namespace UserActivityTracker
                     case UserActionType.Unknown:
                         if (userAction.ActionParameters.Length >= 1)
                         {
-                            UpdateLogOutput("ERROR", "Unknown User Action: " + userAction.ActionParameters[0].ToString());
+                            UpdateLogOutput(LogOutputTypes.Error, $"Unknown User Action: {userAction.ActionParameters[0]}");
                         }
                         break;
                     case UserActionType.Message:
                         if (userAction.ActionParameters.Length >= 1)
                         {
-                            UpdateLogOutput("MESSAGE", userAction.ActionParameters[0].ToString());
+                            UpdateLogOutput(LogOutputTypes.Message, userAction.ActionParameters[0].ToString());
                         }
                         break;
                     case UserActionType.Pause:
@@ -227,7 +235,78 @@ namespace UserActivityTracker
 
         private void UpdateLogOutput(string outputType, string newOutput)
         {
-            this.LogOutput += $"[{outputType}] {newOutput}\n";
+            string log = $"[{outputType}] {newOutput}\n";
+            this.LogOutput += log;
+
+            if (this.LogOutputUpdated != null)
+            {
+                LogOutputEventArgs eventArgs = new LogOutputEventArgs(log, outputType, newOutput, this.LogOutput);
+                this.LogOutputUpdated(this, eventArgs);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represents the method that will handle the <see cref="LogOutputUpdated"/> event.
+    /// </summary>
+    /// <param name="sender">The object where the event handler is attached.</param>
+    /// <param name="e">The event data.</param>
+    public delegate void LogOutputUpdatedHandler(object sender, LogOutputEventArgs e);
+
+    /// <summary>
+    /// Specifies the type of a log.
+    /// </summary>
+    public class LogOutputTypes
+    {
+        /// <summary>
+        /// The log indicates an error.
+        /// </summary>
+        public const string Error = "ERROR";
+
+        /// <summary>
+        /// The log indicates a message.
+        /// </summary>
+        public const string Message = "MESSAGE";
+    }
+
+    /// <summary>
+    /// Provides data for log output related events.
+    /// </summary>
+    public class LogOutputEventArgs : EventArgs
+    {
+        /// <summary>
+        /// The formatted update string that happened to the log output.
+        /// </summary>
+        public string Update { get; internal set; }
+
+        /// <summary>
+        /// The type of update that happened to the log output.
+        /// </summary>
+        public string UpdateType { get; internal set; }
+
+        /// <summary>
+        /// The raw update string that happened to the log output.
+        /// </summary>
+        public string RawUpdate { get; internal set; }
+
+        /// <summary>
+        /// The entirety of the current log output.
+        /// </summary>
+        public string FullLog { get; internal set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogOutputEventArgs"/> class with specified <see cref="Update"/>, <see cref="UpdateType"/>, <see cref="RawUpdate"/>, and <see cref="FullLog"/>.
+        /// </summary>
+        /// <param name="update">The formatted update string that happened to the log output.</param>
+        /// <param name="updateType">The type of update that happened to the log output.</param>
+        /// <param name="rawUpdate">The raw update string that happened to the log output.</param>
+        /// <param name="fullLog">The entirety of the current log output.</param>
+        public LogOutputEventArgs(string update, string updateType, string rawUpdate, string fullLog)
+        {
+            this.Update = update;
+            this.UpdateType = updateType;
+            this.RawUpdate = rawUpdate;
+            this.FullLog = fullLog;
         }
     }
 }

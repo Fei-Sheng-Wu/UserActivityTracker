@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace UserActivityTracker.Test
 {
@@ -17,7 +18,7 @@ namespace UserActivityTracker.Test
             buttonRecord.IsEnabled = true;
             buttonPlay.IsEnabled = false;
 
-            textRandom.Text = "This is a random number: " + new Random().Next(); //Generate a random content of the TextBlock to demonstrate the customizable starting configuration.
+            textRandom.Text = $"This is a random number: {new Random().Next()}"; //Generate a random content of the TextBlock to demonstrate the customizable starting configuration.
 
             recorder = new UserActivityTracker.Recorder(this); //Set the element to be recorded to the window.
 
@@ -28,8 +29,6 @@ namespace UserActivityTracker.Test
             //    {
             //        return;
             //    }
-            //    buttonRecord.IsEnabled = false;
-            //    buttonPlay.IsEnabled = false;
             //
             //    if (!recorder.IsRecording) //Check whether the recording has started yet.
             //    {
@@ -51,7 +50,6 @@ namespace UserActivityTracker.Test
             //    {
             //        recorder.Stop(); //Stop the recording. Returns true if the recording was stopped successfully.
             //        session = recorder.Save(); //Retrieve the string representation of the recording.
-            //
             //        MessageBox.Show(session, "Recording Data"); //Display the string representation of the recording.
             //    }
             //};
@@ -86,6 +84,7 @@ namespace UserActivityTracker.Test
 
             MainWindow window = new MainWindow() { Tag = "Play" }; //Create a new window for the user actions to be played.
             UserActivityTracker.Player player = new UserActivityTracker.Player(window); //Set the element to play the user actions to the new window.
+            player.LogOutputUpdated += Player_LogOutputUpdated; //Use the LogOutputUpdated event to receive real-time updates on the log output.
 
             window.Show(); //Show the new window.
             window.ContentRendered += async (obj, args) => //Play the user actions when the new window is ready.
@@ -108,11 +107,19 @@ namespace UserActivityTracker.Test
                     window.Close(); //Close the new window as the playing is done.
 
                     MessageBox.Show(session, "Recording Data"); //Display the string representation of the recording.
-                    MessageBox.Show(player.LogOutput, "Log Output"); //Display the outputted logs of the recording.
+                    if (!string.IsNullOrWhiteSpace(player.LogOutput))
+                    {
+                        MessageBox.Show(player.LogOutput, "Log Output"); //Display all outputted logs of the recording.
+                    }
                 }
             };
 
             buttonPlay.IsEnabled = true;
+        }
+
+        private void Player_LogOutputUpdated(object sender, LogOutputEventArgs e)
+        {
+            Debug.Write(e.Update, "UserActivityTracker.Player"); //Write the received update to the debug window.
         }
 
         private void SampleButton_Click(object sender, RoutedEventArgs e)
