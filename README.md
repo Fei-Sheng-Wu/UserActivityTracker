@@ -98,7 +98,7 @@ recorder.Start(startingConfig); //Start the recording with a customized configur
 Play the user actions with a callback that uses the configuration string stored:
 
 ```c#
-//Play the recorded user actions from the string representation along with a callback that retrieves the saved starting configuration.
+//Play the recorded user actions from the string representation with a callback that retrieves and uses the saved starting configuration.
 await player.Play(session, (startingConfig) =>
 {
     if (window.FindName("textRandom") is TextBlock textBlock)
@@ -108,7 +108,7 @@ await player.Play(session, (startingConfig) =>
 });
 ```
 
-### Log Message
+### Log Information
 
 Add a custom string message without the characters `;` and `'` to the recording that can be outputted to the logs during the playing:
 
