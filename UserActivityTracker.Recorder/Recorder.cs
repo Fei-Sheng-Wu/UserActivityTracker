@@ -5,6 +5,9 @@ using UserActivityTracker.FileFormat;
 
 namespace UserActivityTracker
 {
+    /// <summary>
+    /// Provides the ability to record a series of user actions on a specified <see cref="FrameworkElement"/>.
+    /// </summary>
     public class Recorder
     {
         /// <summary>
@@ -36,7 +39,7 @@ namespace UserActivityTracker
         private int lastActionTime;
 
         /// <summary>
-        /// Initialize a new <see cref="Recorder"/> on a specified <see cref="FrameworkElement"/>.
+        /// Initialize a new instance of the <see cref="Recorder"/> class on a specified <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="element">The <see cref="FrameworkElement"/> that is set to be recorded.</param>
         public Recorder(FrameworkElement element)
@@ -126,9 +129,9 @@ namespace UserActivityTracker
         }
 
         /// <summary>
-        /// Add a custom <see langword="string"/> message to the recording that can be outputted to the logs. Cannot include the characters ";" and "'" in it.
+        /// Add a custom <see langword="string"/> message to the recording that can be outputted to the logs.
         /// </summary>
-        /// <param name="message">A custom <see langword="string"/> that will be added to the recording.</param>
+        /// <param name="message">A custom <see langword="string"/> that will be added to the recording. Cannot include the characters ";" and "'" in it.</param>
         /// <returns><see langword="true"/> if the message was added successfully; otherwise, <see langword="false"/>.</returns>
         public bool LogMessage(string message)
         {
