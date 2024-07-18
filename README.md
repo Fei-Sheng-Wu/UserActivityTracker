@@ -123,6 +123,18 @@ Receive the current output of logs that have already been outputted during the p
 string logOutput = player.LogOutput; //The available logs at the moment. 
 ```
 
+Use the `LogOutputUpdated` event to receive log outputs at real-time:
+
+```c#
+player.LogOutputUpdated += Player_LogOutputUpdated; //Add a listener to the LogOutputUpdated event.
+```
+```c#
+private void Player_LogOutputUpdated(object sender, LogOutputEventArgs e)
+{
+    Debug.Write(e.Update, "UserActivityTracker.Player"); //Write the received update to the debug window.
+}
+```
+
 ## Recording Data Format
 
 The saved string representation is in a format where attributes are separated with semicolons and include `f`(`FrameRate`), `w`(`StartingWidth`), `h`(`StartingHeight`), `c`(`StartingConfig`), and `a`(`Actions`). Each attribute uses a single-letter indication of the attribute that is followed by the value directly, minimizing the length of the string representation.
