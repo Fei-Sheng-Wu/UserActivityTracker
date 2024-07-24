@@ -68,13 +68,10 @@ namespace UserActivityTracker.FileFormat
                         continue;
                     }
                 }
-                else
+                else if (char.IsLetter(c))
                 {
-                    if (char.IsLetter(c))
-                    {
-                        yield return FromString(currentAction);
-                        currentAction = "";
-                    }
+                    yield return FromString(currentAction);
+                    currentAction = "";
                 }
 
                 currentAction += c;
@@ -87,6 +84,7 @@ namespace UserActivityTracker.FileFormat
         Unknown = 'x',
         Message = 'i', //Info
         Pause = 'w', //Wait
+        Resize = 'c', //Change
         MouseMove = 'm', //Move
         MouseDown = 'p', //Press
         MouseUp = 'r', //Release

@@ -79,6 +79,7 @@ namespace UserActivityTracker
                 Actions = ""
             };
 
+            this.Element.SizeChanged += AddSizeChanged;
             this.Element.PreviewMouseMove += AddMouseMove;
             this.Element.PreviewMouseDown += AddMouseDown;
             this.Element.PreviewMouseUp += AddMouseUp;
@@ -104,6 +105,7 @@ namespace UserActivityTracker
                 this.IsRecording = false;
             }
 
+            this.Element.SizeChanged -= AddSizeChanged;
             this.Element.PreviewMouseMove -= AddMouseMove;
             this.Element.PreviewMouseDown -= AddMouseDown;
             this.Element.PreviewMouseUp -= AddMouseUp;
@@ -159,7 +161,7 @@ namespace UserActivityTracker
             }
             else
             {
-                return timestamp - int.MinValue + lastActionTime - int.MaxValue;
+                return timestamp - int.MinValue + int.MaxValue - lastActionTime;
             }
         }
 
@@ -178,6 +180,22 @@ namespace UserActivityTracker
             }
 
             lastActionTime = timestamp;
+        }
+
+        private void AddSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!this.IsRecording)
+            {
+                return;
+            }
+
+            AddPossiblePause();
+
+            session.Actions += new UserAction()
+            {
+                ActionType = UserActionType.Resize,
+                ActionParameters = new object[] { this.Element.ActualWidth, this.Element.ActualHeight }
+            }.ToString();
         }
 
         private void AddMouseMove(object sender, MouseEventArgs e)
