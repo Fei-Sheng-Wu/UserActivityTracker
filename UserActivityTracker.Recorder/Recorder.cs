@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Collections.Generic;
 using UserActivityTracker.FileFormat;
 
 namespace UserActivityTracker
@@ -16,7 +17,7 @@ namespace UserActivityTracker
         public FrameworkElement Element { get; }
 
         /// <summary>
-        /// The number of basic user actions that are recorded per second, including moving the mouse. The default value is 30.
+        /// The number of basic user actions that are recorded per second, including moving the mouse. The default value is 15.
         /// </summary>
         public int FrameRate { get; set; }
 
@@ -36,6 +37,7 @@ namespace UserActivityTracker
         public bool IsRecording { get; internal set; }
 
         private Structure session;
+        private UserAction lastAction;
         private int lastActionTime;
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace UserActivityTracker
         public Recorder(FrameworkElement element)
         {
             this.Element = element;
-            this.FrameRate = 30;
+            this.FrameRate = 15;
             this.RecordMouseActions = true;
             this.RecordKeyboardActions = true;
             this.IsRecording = false;
@@ -69,15 +71,19 @@ namespace UserActivityTracker
 
             this.Element.Focus();
 
-            lastActionTime = Environment.TickCount;
             session = new Structure
             {
                 FrameRate = this.FrameRate,
                 StartingWidth = this.Element.ActualWidth,
                 StartingHeight = this.Element.ActualHeight,
                 StartingConfig = startingConfig,
-                Actions = ""
+                Actions = new List<string>()
             };
+            lastAction = new UserAction
+            {
+                ActionType = UserActionType.Unknown
+            };
+            lastActionTime = Environment.TickCount;
 
             this.Element.SizeChanged += AddSizeChanged;
             this.Element.PreviewMouseMove += AddMouseMove;
@@ -137,165 +143,134 @@ namespace UserActivityTracker
         /// <returns><see langword="true"/> if the message was added successfully; otherwise, <see langword="false"/>.</returns>
         public bool LogMessage(string message)
         {
-            if (!this.IsRecording || message.Contains(";") || message.Contains("'"))
+            if (message.Contains(";") || message.Contains("'"))
             {
                 return false;
             }
 
-            session.Actions += new UserAction()
-            {
-                ActionType = UserActionType.Message,
-                ActionParameters = new object[] { $"\'{message}\'" }
-            }.ToString();
+            AddUserAction(UserActionType.Message, false, $"\'{message}\'");
 
             return true;
         }
 
-        private int CalculateTimePassed()
-        {
-            int timestamp = Environment.TickCount;
-
-            if (timestamp >= lastActionTime)
-            {
-                return timestamp - lastActionTime;
-            }
-            else
-            {
-                return timestamp - int.MinValue + int.MaxValue - lastActionTime;
-            }
-        }
-
-        private void AddPossiblePause()
-        {
-            int timestamp = Environment.TickCount;
-
-            int extra = CalculateTimePassed() - 1000 / this.FrameRate;
-            if (extra > 0)
-            {
-                session.Actions += new UserAction()
-                {
-                    ActionType = UserActionType.Pause,
-                    ActionParameters = new object[] { extra }
-                }.ToString();
-            }
-
-            lastActionTime = timestamp;
-        }
-
-        private void AddSizeChanged(object sender, SizeChangedEventArgs e)
+        private void AddUserAction(UserActionType actionType, bool addPause, params object[] actionParameters)
         {
             if (!this.IsRecording)
             {
                 return;
             }
 
-            AddPossiblePause();
-
-            session.Actions += new UserAction()
+            if (addPause)
             {
-                ActionType = UserActionType.Resize,
-                ActionParameters = new object[] { this.Element.ActualWidth, this.Element.ActualHeight }
-            }.ToString();
+                int currentTime = Environment.TickCount;
+                int extraTime = currentTime - lastActionTime - 1000 / this.FrameRate;
+                if (extraTime > 0)
+                {
+                    lastAction = new UserAction()
+                    {
+                        ActionType = UserActionType.Pause,
+                        ActionParameters = new object[] { extraTime }
+                    };
+                    session.Actions.Add(lastAction.ToString());
+                }
+                lastActionTime = currentTime;
+            }
+
+            lastAction = new UserAction()
+            {
+                ActionType = actionType,
+                ActionParameters = actionParameters
+            };
+            session.Actions.Add(lastAction.ToString());
+        }
+
+        private void AddSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (lastAction.ActionType == UserActionType.Resize
+                && Environment.TickCount - lastActionTime < 1000 / this.FrameRate)
+            {
+                session.Actions.RemoveAt(session.Actions.Count - 1);
+            }
+
+            AddUserAction(UserActionType.Resize, true, this.Element.ActualWidth, this.Element.ActualHeight);
         }
 
         private void AddMouseMove(object sender, MouseEventArgs e)
         {
-            if (!this.IsRecording || !this.RecordMouseActions || CalculateTimePassed() < 1000 / this.FrameRate)
+            if (!this.RecordMouseActions || Environment.TickCount - lastActionTime < 1000 / this.FrameRate)
             {
                 return;
             }
 
-            AddPossiblePause();
-
             Point position = e.GetPosition(this.Element);
-            session.Actions += new UserAction()
-            {
-                ActionType = UserActionType.MouseMove,
-                ActionParameters = new object[] { position.X, position.Y }
-            }.ToString();
+            AddUserAction(UserActionType.MouseMove, true, position.X, position.Y);
         }
 
         private void AddMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!this.IsRecording || !this.RecordMouseActions)
+            if (!this.RecordMouseActions)
             {
                 return;
             }
 
-            AddPossiblePause();
-
             Point position = e.GetPosition(this.Element);
-            session.Actions += new UserAction()
-            {
-                ActionType = UserActionType.MouseDown,
-                ActionParameters = new object[] { position.X, position.Y, (int)e.ChangedButton }
-            }.ToString();
+            AddUserAction(UserActionType.MouseDown, true, position.X, position.Y, (int)e.ChangedButton);
         }
 
         private void AddMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (!this.IsRecording || !this.RecordMouseActions)
+            if (!this.RecordMouseActions)
             {
                 return;
             }
 
-            AddPossiblePause();
-
             Point position = e.GetPosition(this.Element);
-            session.Actions += new UserAction()
-            {
-                ActionType = UserActionType.MouseUp,
-                ActionParameters = new object[] { position.X, position.Y, (int)e.ChangedButton }
-            }.ToString();
+            AddUserAction(UserActionType.MouseUp, true, position.X, position.Y, (int)e.ChangedButton);
         }
 
         private void AddMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (!this.IsRecording || !this.RecordMouseActions)
+            if (!this.RecordMouseActions)
             {
                 return;
             }
 
-            AddPossiblePause();
-
             Point position = e.GetPosition(this.Element);
-            session.Actions += new UserAction()
+            int delta = e.Delta;
+
+            if (lastAction.ActionType == UserActionType.MouseWheel
+                && Environment.TickCount - lastActionTime < 1000 / this.FrameRate
+                && lastAction.ActionParameters.Length >= 3
+                && double.TryParse(lastAction.ActionParameters[0].ToString(), out double lastX)
+                && double.TryParse(lastAction.ActionParameters[1].ToString(), out double lastY)
+                && position.X == lastX && position.Y == lastY
+                && int.TryParse(lastAction.ActionParameters[2].ToString(), out int lastDelta))
             {
-                ActionType = UserActionType.MouseWheel,
-                ActionParameters = new object[] { position.X, position.Y, e.Delta }
-            }.ToString();
+                delta += lastDelta;
+                session.Actions.RemoveAt(session.Actions.Count - 1);
+            }
+
+            AddUserAction(UserActionType.MouseWheel, true, position.X, position.Y, delta);
         }
 
         private void AddKeyDown(object sender, KeyEventArgs e)
         {
-            if (!this.IsRecording || !this.RecordKeyboardActions)
+            if (!this.RecordKeyboardActions)
             {
                 return;
             }
 
-            AddPossiblePause();
-
-            session.Actions += new UserAction()
-            {
-                ActionType = UserActionType.KeyDown,
-                ActionParameters = new object[] { KeyInterop.VirtualKeyFromKey(e.Key) }
-            }.ToString();
+            AddUserAction(UserActionType.KeyDown, true, KeyInterop.VirtualKeyFromKey(e.Key));
         }
 
         private void AddKeyUp(object sender, KeyEventArgs e)
         {
-            if (!this.IsRecording || !this.RecordKeyboardActions)
+            if (!this.RecordKeyboardActions)
             {
                 return;
             }
 
-            AddPossiblePause();
-
-            session.Actions += new UserAction()
-            {
-                ActionType = UserActionType.KeyUp,
-                ActionParameters = new object[] { KeyInterop.VirtualKeyFromKey(e.Key) }
-            }.ToString();
+            AddUserAction(UserActionType.KeyUp, true, KeyInterop.VirtualKeyFromKey(e.Key));
         }
     }
 }

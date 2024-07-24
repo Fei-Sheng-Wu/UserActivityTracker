@@ -11,7 +11,12 @@ namespace UserActivityTracker.FileFormat
 
         public override string ToString()
         {
-            return (char)ActionType + string.Join(",", ActionParameters);
+            if (this.ActionParameters == null)
+            {
+                this.ActionParameters = new object[] { };
+            }
+
+            return (char)this.ActionType + string.Join(",", this.ActionParameters);
         }
 
         public static UserAction FromString(string value)
@@ -44,11 +49,20 @@ namespace UserActivityTracker.FileFormat
             return action;
         }
 
-        public static IEnumerable<UserAction> FromStringList(string value)
+        public static IEnumerable<UserAction> FromStringList(List<string> value)
         {
+            if (value.Count != 1)
+            {
+                foreach (string action in value)
+                {
+                    yield return FromString(action);
+                }
+                yield break;
+            }
+
             string currentAction = "";
 
-            foreach (char c in value)
+            foreach (char c in value[0])
             {
                 if (currentAction.Length == 0)
                 {

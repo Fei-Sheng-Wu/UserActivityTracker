@@ -1,4 +1,7 @@
-﻿namespace UserActivityTracker.FileFormat
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace UserActivityTracker.FileFormat
 {
     public class Structure
     {
@@ -10,7 +13,7 @@
 
         public string StartingConfig { get; set; }
 
-        public string Actions { get; set; }
+        public List<string> Actions { get; set; }
 
         public static string Serialize(Structure value)
         {
@@ -18,7 +21,7 @@
                 + ";w" + value.StartingWidth
                 + ";h" + value.StartingHeight
                 + ";c" + value.StartingConfig.Replace(";", "")
-                + ";a" + value.Actions;
+                + ";a" + string.Join("", value.Actions);
         }
 
         public static Structure Deserialize(string value)
@@ -59,7 +62,7 @@
                         structure.StartingConfig = data;
                         break;
                     case 'a':
-                        structure.Actions = data;
+                        structure.Actions = new List<string>() { data };
                         break;
                 }
             }

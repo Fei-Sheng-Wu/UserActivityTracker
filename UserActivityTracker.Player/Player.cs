@@ -234,6 +234,7 @@ namespace UserActivityTracker
                 timestamp = Environment.TickCount;
             }
 
+            this.IsPlaying = false;
             return true;
         }
 
