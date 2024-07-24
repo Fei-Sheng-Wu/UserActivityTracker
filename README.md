@@ -11,10 +11,11 @@
 - [x] Record user actions without worrying about different types of elements
 - [x] Record user actions with relative positionings
 - [x] Save the recording data to a string representation
-- [x] Play the recorded user actions at anytime
+- [x] Play the recorded user actions whenever
 - [x] Specify a particular element for recording
 - [x] Save the initial size of the element upon starting
 - [x] Save additional customized configurations upon starting
+- [x] Save logging messages at anytime during recording
 
 ## How to Use
 
@@ -52,7 +53,7 @@ window.ContentRendered += async (obj, args) => //Play the user actions when the 
 Configurable properties of `UserActivityTracker.Recorder`:
 
 ```c#
-recorder.FrameRate = 30; //The number of basic user actions that are recorded per second, including moving the mouse. The default value is 30.
+recorder.FrameRate = 15; //The number of basic user actions that are recorded per second, including moving the mouse. The default value is 15.
 recorder.RecordMouseActions = true; //Indicates whether to record mouse actions from the user. The default value is true.
 recorder.RecordKeyboardActions = true; //Indicates whether to record keyboard actions from the user. The default value is true.
 ```
