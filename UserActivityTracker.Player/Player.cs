@@ -126,6 +126,15 @@ namespace UserActivityTracker
                             await Pause(wTime, this.PlaybackSpeed);
                         }
                         break;
+                    case UserActionType.Resize:
+                        if (userAction.ActionParameters.Length >= 2
+                            && double.TryParse(userAction.ActionParameters[0].ToString(), out double cWidth)
+                            && double.TryParse(userAction.ActionParameters[1].ToString(), out double cHeight))
+                        {
+                            this.Element.Width = cWidth;
+                            this.Element.Height = cHeight;
+                        }
+                        break;
                     case UserActionType.MouseMove:
                         if (userAction.ActionParameters.Length >= 2
                             && double.TryParse(userAction.ActionParameters[0].ToString(), out double mX)
