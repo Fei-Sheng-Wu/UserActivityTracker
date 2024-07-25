@@ -17,9 +17,39 @@ namespace UserActivityTracker
         public FrameworkElement Element { get; }
 
         /// <summary>
+        /// Indicates whether the recording has started yet.
+        /// </summary>
+        public bool IsRecording
+        {
+            get
+            {
+                return _isRecording;
+            }
+        }
+        private bool _isRecording;
+
+        /// <summary>
         /// The number of basic user actions that are recorded per second, including moving the mouse. The default value is 15.
         /// </summary>
-        public int FrameRate { get; set; }
+        public int FrameRate
+        {
+            get
+            {
+                return _frameRate;
+            }
+            set
+            {
+                _frameRate = value;
+                _frameDuration = 1000 / value;
+            }
+        }
+        private int _frameRate;
+        private int _frameDuration;
+
+        /// <summary>
+        /// Indicates whether to optimize recording data based on <see cref="FrameRate"/>. The default value is <see langword="true"/>.
+        /// </summary>
+        public bool OptimizeData { get; set; }
 
         /// <summary>
         /// Indicates whether to record mouse actions from the user. The default value is <see langword="true"/>.
@@ -30,11 +60,6 @@ namespace UserActivityTracker
         /// Indicates whether to record keyboard actions from the user. The default value is <see langword="true"/>.
         /// </summary>
         public bool RecordKeyboardActions { get; set; }
-
-        /// <summary>
-        /// Indicates whether the recording has started yet.
-        /// </summary>
-        public bool IsRecording { get; internal set; }
 
         private Structure session;
         private UserAction lastAction;
@@ -48,9 +73,11 @@ namespace UserActivityTracker
         {
             this.Element = element;
             this.FrameRate = 15;
+            this.OptimizeData = true;
             this.RecordMouseActions = true;
             this.RecordKeyboardActions = true;
-            this.IsRecording = false;
+
+            _isRecording = false;
         }
 
         /// <summary>
@@ -60,13 +87,14 @@ namespace UserActivityTracker
         /// <returns><see langword="true"/> if the recording was started successfully; otherwise, <see langword="false"/>.</returns>
         public bool Start(string startingConfig = "")
         {
-            if (this.IsRecording || this.Element == null || startingConfig.Contains(";"))
+            if (this.IsRecording || this.Element == null || this.FrameRate <= 0
+                || startingConfig.Contains(";"))
             {
                 return false;
             }
             else
             {
-                this.IsRecording = true;
+                _isRecording = true;
             }
 
             this.Element.Focus();
@@ -108,7 +136,7 @@ namespace UserActivityTracker
             }
             else
             {
-                this.IsRecording = false;
+                _isRecording = false;
             }
 
             this.Element.SizeChanged -= AddSizeChanged;
@@ -163,7 +191,7 @@ namespace UserActivityTracker
             if (addPause)
             {
                 int currentTime = Environment.TickCount;
-                int extraTime = currentTime - lastActionTime - 1000 / this.FrameRate;
+                int extraTime = currentTime - lastActionTime - _frameDuration;
                 if (extraTime > 0)
                 {
                     lastAction = new UserAction()
@@ -186,8 +214,8 @@ namespace UserActivityTracker
 
         private void AddSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (lastAction.ActionType == UserActionType.Resize
-                && Environment.TickCount - lastActionTime < 1000 / this.FrameRate)
+            if (this.OptimizeData && lastAction.ActionType == UserActionType.Resize
+                && Environment.TickCount - lastActionTime < _frameDuration)
             {
                 session.Actions.RemoveAt(session.Actions.Count - 1);
             }
@@ -197,7 +225,7 @@ namespace UserActivityTracker
 
         private void AddMouseMove(object sender, MouseEventArgs e)
         {
-            if (!this.RecordMouseActions || Environment.TickCount - lastActionTime < 1000 / this.FrameRate)
+            if (!this.RecordMouseActions || Environment.TickCount - lastActionTime < _frameDuration)
             {
                 return;
             }
@@ -238,8 +266,8 @@ namespace UserActivityTracker
             Point position = e.GetPosition(this.Element);
             int delta = e.Delta;
 
-            if (lastAction.ActionType == UserActionType.MouseWheel
-                && Environment.TickCount - lastActionTime < 1000 / this.FrameRate
+            if (this.OptimizeData && lastAction.ActionType == UserActionType.MouseWheel
+                && Environment.TickCount - lastActionTime < _frameDuration
                 && lastAction.ActionParameters.Length >= 3
                 && double.TryParse(lastAction.ActionParameters[0].ToString(), out double lastX)
                 && double.TryParse(lastAction.ActionParameters[1].ToString(), out double lastY)

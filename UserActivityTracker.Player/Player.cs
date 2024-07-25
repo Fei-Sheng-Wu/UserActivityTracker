@@ -19,19 +19,33 @@ namespace UserActivityTracker
         public FrameworkElement Element { get; }
 
         /// <summary>
+        /// Indicates whether the playing has started yet.
+        /// </summary>
+        public bool IsPlaying
+        {
+            get
+            {
+                return _isPlaying;
+            }
+        }
+        private bool _isPlaying;
+
+        /// <summary>
         /// The multiple that is applied to the frame rate during the playing. The default value is 1.0.
         /// </summary>
         public double PlaybackSpeed { get; set; }
 
         /// <summary>
-        /// Indicates whether the playing has started yet.
-        /// </summary>
-        public bool IsPlaying { get; internal set; }
-
-        /// <summary>
         /// The current output of logs that have already been outputted.
         /// </summary>
-        public string LogOutput { get; internal set; }
+        public string LogOutput
+        {
+            get
+            {
+                return _logOutput;
+            }
+        }
+        private string _logOutput;
 
         /// <summary>
         /// Occurs after <see cref="LogOutput"/> has been updated.
@@ -46,8 +60,9 @@ namespace UserActivityTracker
         {
             this.Element = element;
             this.PlaybackSpeed = 1.0;
-            this.IsPlaying = false;
-            this.LogOutput = "";
+
+            _isPlaying = false;
+            _logOutput = "";
         }
 
         [DllImport("user32.dll")]
@@ -73,13 +88,14 @@ namespace UserActivityTracker
         /// <returns><see langword="true"/> if the user actions were played successfully; otherwise, <see langword="false"/>.</returns>
         public async Task<bool> Play(string data, Action<string> startingConfigHandler = null)
         {
-            if (this.IsPlaying || this.Element == null || string.IsNullOrWhiteSpace(data))
+            if (this.IsPlaying || this.Element == null || this.PlaybackSpeed <= 0
+                || string.IsNullOrWhiteSpace(data))
             {
                 return false;
             }
             else
             {
-                this.IsPlaying = true;
+                _isPlaying = true;
             }
 
             Structure session = Structure.Deserialize(data);
@@ -234,7 +250,7 @@ namespace UserActivityTracker
                 timestamp = Environment.TickCount;
             }
 
-            this.IsPlaying = false;
+            _isPlaying = false;
             return true;
         }
 
@@ -246,7 +262,7 @@ namespace UserActivityTracker
         private void UpdateLogOutput(string outputType, string newOutput)
         {
             string log = $"[{outputType}] {newOutput}\n";
-            this.LogOutput += log;
+            _logOutput += log;
 
             if (this.LogOutputUpdated != null)
             {
@@ -287,22 +303,22 @@ namespace UserActivityTracker
         /// <summary>
         /// The formatted update string that happened to the log output.
         /// </summary>
-        public string Update { get; internal set; }
+        public string Update { get; }
 
         /// <summary>
         /// The type of update that happened to the log output.
         /// </summary>
-        public string UpdateType { get; internal set; }
+        public string UpdateType { get; }
 
         /// <summary>
         /// The raw update string that happened to the log output.
         /// </summary>
-        public string RawUpdate { get; internal set; }
+        public string RawUpdate { get; }
 
         /// <summary>
         /// The entirety of the current log output.
         /// </summary>
-        public string FullLog { get; internal set; }
+        public string FullLog { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogOutputEventArgs"/> class with specified <see cref="Update"/>, <see cref="UpdateType"/>, <see cref="RawUpdate"/>, and <see cref="FullLog"/>.
