@@ -54,6 +54,7 @@ Configurable properties of `UserActivityTracker.Recorder`:
 
 ```c#
 recorder.FrameRate = 15; //The number of basic user actions that are recorded per second, including moving the mouse. The default value is 15.
+recorder.OptimizeData = true; //Indicates whether to optimize recording data based on the frame rate. The default value is true.
 recorder.RecordMouseActions = true; //Indicates whether to record mouse actions from the user. The default value is true.
 recorder.RecordKeyboardActions = true; //Indicates whether to record keyboard actions from the user. The default value is true.
 ```
@@ -165,6 +166,18 @@ d8 //Press down the backspace key.
 ```
 u8 //Release up the backspace key.
 ```
+
+|User Action|Representation|Parameters|Type
+|---|---|---|---|
+|`Message`|`i`|`[message (string)]`|Others|
+|`Pause`|`w`|`[time (int)]`|Others|
+|`Resize`|`c`|`[width (double), height (double)]`|Others|
+|`MouseMove`|`m`|`[x (double), y (double)]`|Mouse|
+|`MouseDown`|`p`|`[x (double), y (double), button (int)]`|Mouse|
+|`MouseUp`|`r`|`[x (double), y (double), button (int)]`|Mouse|
+|`MouseWheel`|`s`|`[x (double), y (double), delta (int)]`|Mouse|
+|`KeyDown`|`d`|`[key (int)]`|Keyboard|
+|`KeyUp`|`u`|`[key (int)]`|Keyboard|
 
 ## License
 
