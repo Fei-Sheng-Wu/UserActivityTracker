@@ -145,6 +145,8 @@ The saved string representation is in a format where attributes are separated wi
 
 `Actions` is a string representing a list of `UserAction` that uses single letters to indicate the type of action, then action-specific parameters seperated by commas. All coordinates are based on relative positioning to the recorded element.
 
+### Examples
+
 ```
 w170 //Pause for 170 milliseconds.
 ```
@@ -155,17 +157,13 @@ m351.2,328 //Move the mouse cursor to 351.2 on the x-axis and 328 on the y-axis.
 p419.2,180,0 //Press down the left mouse button at 419.2 on the x-axis and 180 on the y-axis.
 ```
 ```
-r419.2,180,0 //Release up the left mouse button at 419.2 on the x-axis and 180 on the y-axis.
-```
-```
 s465.6,182.4,74 //Scroll the mouse wheel by 74 at 465.6 on the x-axis and 182.4 on the y-axis.
-```
-```
-d8 //Press down the backspace key.
 ```
 ```
 u8 //Release up the backspace key.
 ```
+
+### Specifications
 
 |User Action|Representation|Parameters|Type
 |---|---|---|---|
