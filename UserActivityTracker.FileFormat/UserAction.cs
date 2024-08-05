@@ -21,29 +21,35 @@ namespace UserActivityTracker.FileFormat
 
         public static UserAction FromString(string value)
         {
-            UserAction action = new UserAction();
+            UserAction action = new UserAction()
+            {
+                ActionType = UserActionType.Unknown
+            };
 
             string valueTrimmed = value.Trim();
             if (valueTrimmed.Length > 0)
             {
-                action.ActionType = UserActionType.Unknown;
                 if (Enum.TryParse(((int)valueTrimmed[0]).ToString(), out UserActionType actionType))
                 {
                     action.ActionType = actionType;
                 }
 
-                if (action.ActionType == UserActionType.Unknown)
+                switch (action.ActionType)
                 {
-                    action.ActionParameters = new object[] { valueTrimmed };
+                    case UserActionType.Unknown:
+                        action.ActionParameters = new object[] { valueTrimmed };
+                        break;
+                    case UserActionType.Message:
+                        action.ActionParameters = new object[] { valueTrimmed.Substring(1).Trim('\'') };
+                        break;
+                    default:
+                        action.ActionParameters = valueTrimmed.Substring(1).Split(',');
+                        break;
                 }
-                else if (action.ActionType == UserActionType.Message)
-                {
-                    action.ActionParameters = new object[] { valueTrimmed.Substring(1).Trim('\'') };
-                }
-                else
-                {
-                    action.ActionParameters = valueTrimmed.Substring(1).Split(',');
-                }
+            }
+            else
+            {
+                action.ActionParameters = new object[] { };
             }
 
             return action;
@@ -60,35 +66,36 @@ namespace UserActivityTracker.FileFormat
                 yield break;
             }
 
+            string stringList = value[0];
             string currentAction = "";
-
-            foreach (char c in value[0])
+            for (int i = 0; i < stringList.Length; i++)
             {
                 if (currentAction.Length == 0)
                 {
-                    if (!char.IsWhiteSpace(c))
+                    if (!char.IsWhiteSpace(stringList[i]))
                     {
-                        currentAction += c;
+                        currentAction += stringList[i];
                     }
                     continue;
                 }
 
-                if (currentAction[0] == (char)UserActionType.Message)
+                bool finished;
+                switch (currentAction[0])
                 {
-                    if (c == '\'' && currentAction.Contains("\'"))
-                    {
-                        yield return FromString(currentAction + c);
-                        currentAction = "";
-                        continue;
-                    }
+                    case (char)UserActionType.Message:
+                        finished = stringList[i] == '\'' && currentAction.Contains("\'");
+                        break;
+                    default:
+                        finished = i == stringList.Length - 1 || char.IsLetter(stringList[i + 1]);
+                        break;
                 }
-                else if (char.IsLetter(c))
+
+                currentAction += stringList[i];
+                if (finished)
                 {
                     yield return FromString(currentAction);
                     currentAction = "";
                 }
-
-                currentAction += c;
             }
         }
     }
