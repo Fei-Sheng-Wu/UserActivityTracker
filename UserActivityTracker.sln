@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserActivityTracker.Test", "UserActivityTracker\UserActivityTracker.Test.csproj", "{F93EDC8D-8752-47C5-BCC7-D0BEC22F314C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserActivityTracker.Test", "UserActivityTracker.Test\UserActivityTracker.Test.csproj", "{F93EDC8D-8752-47C5-BCC7-D0BEC22F314C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserActivityTracker.Recorder", "UserActivityTracker.Recorder\UserActivityTracker.Recorder.csproj", "{1B7B50DB-4E94-45FD-A67D-C1E4B75E9F21}"
 EndProject
