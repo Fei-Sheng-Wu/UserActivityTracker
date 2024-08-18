@@ -14,7 +14,7 @@ namespace UserActivityTracker
     public class Player
     {
         /// <summary>
-        /// The <see cref="FrameworkElement"/> that is set to play the user actions.
+        /// Gets the <see cref="FrameworkElement"/> that is set to play the user actions.
         /// </summary>
         public FrameworkElement Element { get; }
 
@@ -31,12 +31,12 @@ namespace UserActivityTracker
         private bool _isPlaying;
 
         /// <summary>
-        /// The multiple that is applied to the frame rate during the playing. The default value is 1.0.
+        /// Gets or sets the multiple that is applied to the frame rate during the playing. The default value is 1.0.
         /// </summary>
         public double PlaybackSpeed { get; set; }
 
         /// <summary>
-        /// The current output of logs that have already been outputted.
+        /// Gets the current output of logs that have already been outputted.
         /// </summary>
         public string LogOutput
         {
@@ -53,7 +53,7 @@ namespace UserActivityTracker
         public event LogOutputUpdatedHandler LogOutputUpdated;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="Player"/> class on a specified <see cref="FrameworkElement"/>.
+        /// Initializes a new instance of the <see cref="Player"/> class on a specified <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="element">The <see cref="FrameworkElement"/> that is set to play the user actions.</param>
         public Player(FrameworkElement element)
@@ -81,7 +81,7 @@ namespace UserActivityTracker
         private static extern void keybd_event(byte bVk, byte bScan, int dwFlags, IntPtr dwExtraInfo);
 
         /// <summary>
-        /// Play the recorded user actions on <see cref="Element"/> if the playing has not started yet.
+        /// Plays the recorded user actions on <see cref="Element"/> if the playing has not started yet.
         /// </summary>
         /// <param name="data">A <see langword="string"/> representation of all user actions on <see cref="Element"/>.</param>
         /// <param name="startingConfigHandler">An optional handler to use the customized starting configurations retrieved as a <see langword="string"/> if the value exists.</param>
@@ -285,12 +285,12 @@ namespace UserActivityTracker
     public class LogOutputTypes
     {
         /// <summary>
-        /// The log indicates an error.
+        /// Represents the type indicating an error.
         /// </summary>
         public const string Error = "ERROR";
 
         /// <summary>
-        /// The log indicates a message.
+        /// Represents the type indicating a message.
         /// </summary>
         public const string Message = "MESSAGE";
     }
@@ -301,22 +301,22 @@ namespace UserActivityTracker
     public class LogOutputEventArgs : EventArgs
     {
         /// <summary>
-        /// The formatted update string that happened to the log output.
+        /// Gets the formatted update string that happened to the log output.
         /// </summary>
         public string Update { get; }
 
         /// <summary>
-        /// The type of update that happened to the log output.
+        /// Gets the type of update that happened to the log output.
         /// </summary>
         public string UpdateType { get; }
 
         /// <summary>
-        /// The raw update string that happened to the log output.
+        /// Gets the raw update string that happened to the log output.
         /// </summary>
         public string RawUpdate { get; }
 
         /// <summary>
-        /// The entirety of the current log output.
+        /// Gets the entirety of the current log output.
         /// </summary>
         public string FullLog { get; }
 

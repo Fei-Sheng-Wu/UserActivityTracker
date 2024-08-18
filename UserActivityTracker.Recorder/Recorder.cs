@@ -12,7 +12,7 @@ namespace UserActivityTracker
     public class Recorder
     {
         /// <summary>
-        /// The <see cref="FrameworkElement"/> that is set to be recorded.
+        /// Gets the <see cref="FrameworkElement"/> that is set to be recorded.
         /// </summary>
         public FrameworkElement Element { get; }
 
@@ -29,7 +29,7 @@ namespace UserActivityTracker
         private bool _isRecording;
 
         /// <summary>
-        /// The number of basic user actions that are recorded per second, including moving the mouse. The default value is 15.
+        /// Gets or sets the number of basic user actions that are recorded per second, including moving the mouse. The default value is 15.
         /// </summary>
         public int FrameRate
         {
@@ -47,17 +47,17 @@ namespace UserActivityTracker
         private int _frameDuration;
 
         /// <summary>
-        /// Indicates whether to optimize recording data based on <see cref="FrameRate"/>. The default value is <see langword="true"/>.
+        /// Gets or sets whether to optimize recording data based on <see cref="FrameRate"/>. The default value is <see langword="true"/>.
         /// </summary>
         public bool OptimizeData { get; set; }
 
         /// <summary>
-        /// Indicates whether to record mouse actions from the user. The default value is <see langword="true"/>.
+        /// Gets or sets whether to record mouse actions from the user. The default value is <see langword="true"/>.
         /// </summary>
         public bool RecordMouseActions { get; set; }
 
         /// <summary>
-        /// Indicates whether to record keyboard actions from the user. The default value is <see langword="true"/>.
+        /// Gets or sets whether to record keyboard actions from the user. The default value is <see langword="true"/>.
         /// </summary>
         public bool RecordKeyboardActions { get; set; }
 
@@ -66,7 +66,7 @@ namespace UserActivityTracker
         private int lastActionTime;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="Recorder"/> class on a specified <see cref="FrameworkElement"/>.
+        /// Initializes a new instance of the <see cref="Recorder"/> class on a specified <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="element">The <see cref="FrameworkElement"/> that is set to be recorded.</param>
         public Recorder(FrameworkElement element)
@@ -81,7 +81,7 @@ namespace UserActivityTracker
         }
 
         /// <summary>
-        /// Start to record user actions on <see cref="Element"/> if the recording has not started yet.
+        /// Starts to record user actions on <see cref="Element"/> if the recording has not started yet.
         /// </summary>
         /// <param name="startingConfig">An optional <see langword="string"/> value to store customized starting configurations. Cannot include the character ";" in it.</param>
         /// <returns><see langword="true"/> if the recording was started successfully; otherwise, <see langword="false"/>.</returns>
@@ -125,7 +125,7 @@ namespace UserActivityTracker
         }
 
         /// <summary>
-        /// Stop the current recording on <see cref="Element"/> if the recording is ongoing.
+        /// Stops the current recording on <see cref="Element"/> if the recording is ongoing.
         /// </summary>
         /// <returns><see langword="true"/> if the recording was stopped successfully; otherwise, <see langword="false"/>.</returns>
         public bool Stop()
@@ -151,7 +151,7 @@ namespace UserActivityTracker
         }
 
         /// <summary>
-        /// Save the current recording on <see cref="Element"/> if the recording exists.
+        /// Saves the current recording on <see cref="Element"/> if the recording exists.
         /// </summary>
         /// <returns>A <see langword="string"/> representation of all user actions on <see cref="Element"/> during the recording.</returns>
         public string Save()
@@ -165,7 +165,7 @@ namespace UserActivityTracker
         }
 
         /// <summary>
-        /// Add a custom <see langword="string"/> message to the recording that can be outputted to the logs.
+        /// Adds a custom <see langword="string"/> message to the recording that can be outputted to the logs.
         /// </summary>
         /// <param name="message">A custom <see langword="string"/> that will be added to the recording. Cannot include the characters ";" and "'" in it.</param>
         /// <returns><see langword="true"/> if the message was added successfully; otherwise, <see langword="false"/>.</returns>
