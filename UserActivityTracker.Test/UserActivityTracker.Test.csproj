@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -77,6 +78,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\UserActivityTracker.Analysis\UserActivityTracker.Analysis.csproj">
+      <Project>{7d5231fc-b3b3-4ece-9f17-54745ae08d7d}</Project>
+      <Name>UserActivityTracker.Analysis</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UserActivityTracker.Player\UserActivityTracker.Player.csproj">
       <Project>{34b170ff-1f4a-4b5d-92e7-5218dbf6779b}</Project>
       <Name>UserActivityTracker.Player</Name>
