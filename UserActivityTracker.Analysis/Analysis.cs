@@ -15,7 +15,7 @@ namespace UserActivityTracker
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="Bitmap"/> that graphs the mouse actions within a a series of user actions.
+        /// Creates an instance of <see cref="Bitmap"/> that graphs the mouse actions within a series of user actions.
         /// </summary>
         /// <param name="data">A <see langword="string"/> representation of all user actions on <see cref="Element"/>.</param>
         /// <param name="userInterface">An underlying <see cref="Bitmap"/> image to be placed beneath the graphed mouse actions.</param>
