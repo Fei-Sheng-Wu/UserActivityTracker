@@ -16,6 +16,7 @@
 - [x] Save the initial size of the element upon starting
 - [x] Save additional customized configurations upon starting
 - [x] Save logging messages at anytime during recording
+- [x] Analyze and graph the recorded user actions
 
 ## How to Use
 
@@ -135,6 +136,14 @@ private void Player_LogOutputUpdated(object sender, LogOutputEventArgs e)
 {
     Debug.Write(e.Update, "UserActivityTracker.Player"); //Write the received update to the debug window.
 }
+```
+
+### User Action Analysis
+
+Analyze and graph the mouse actions within the recorded data:
+
+```c#
+Bitmap bitmap = UserActivityTracker.Analysis.TrackMouseMovements(session);
 ```
 
 ## Recording Data Format
