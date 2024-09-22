@@ -7,6 +7,10 @@
 
 > A lightweight real-time tracker of user interactions for WPF. Support both mouse and keyboard actions. Able to save the tracked recording to a string value and play the recorded actions for UI/UX analysis. Support full window monitoring or a specified focus on a particular element. Support saving the initial size and other states upon starting.
 
+## Dependencies
+
+- .Net Framework ≥ 4.7.2
+
 ## Main Features
 
 - [x] Record user actions without worrying about different types of elements
