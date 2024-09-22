@@ -1,7 +1,8 @@
-# UserActivityTracker
+# UserActivityTracker v1.1.0
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
+[![Nuget](https://img.shields.io/badge/Nuget-v1.1.0-blue.svg?style=flat-square)](https://www.nuget.org/packages/UserActivityTracker/1.1.0)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/UserActivityTracker/blob/main/LICENSE)
 
 > A lightweight real-time tracker of user interactions for WPF. Support both mouse and keyboard actions. Able to save the tracked recording to a string value and play the recorded actions for UI/UX analysis. Support full window monitoring or a specified focus on a particular element. Support saving the initial size and other states upon starting.
@@ -156,19 +157,19 @@ The saved string representation is in a format where attributes are separated wi
 
 ### Examples
 
-```
+```text
 w170 //Pause for 170 milliseconds.
 ```
-```
+```text
 m351.2,328 //Move the mouse cursor to 351.2 on the x-axis and 328 on the y-axis.
 ```
-```
+```text
 p419.2,180,0 //Press down the left mouse button at 419.2 on the x-axis and 180 on the y-axis.
 ```
-```
+```text
 s465.6,182.4,74 //Scroll the mouse wheel by 74 at 465.6 on the x-axis and 182.4 on the y-axis.
 ```
-```
+```text
 u8 //Release up the backspace key.
 ```
 
